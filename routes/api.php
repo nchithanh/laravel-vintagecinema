@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\show_movie;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::prefix('movie')->group(function () {
+    Route::get('all',[show_movie::class,"show_movie_all"]);
+    Route::get('nowshowing',[show_movie::class,"show_movie_nowshowing"]);
+    Route::get('commingsoon',[show_movie::class,"show_movie_commingsoon"]);
+});
+
