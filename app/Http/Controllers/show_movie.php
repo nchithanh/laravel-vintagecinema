@@ -18,4 +18,8 @@ class show_movie extends Controller
         $data = DB::table('film')->where("status",0)->get();
         return json_encode($data);
     }
+    function show_movie_where_id($id){
+        $data = DB::table('film')->where("id_film",$id)->get();
+        return json_encode($data);
+    }
 }
