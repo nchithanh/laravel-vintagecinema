@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\show_movie;
 use App\Http\Controllers\show;
+use App\Http\Controllers\vnpay;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\login;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,3 +33,11 @@ Route::get('row/{id_show}',[show::class,"show_row"]);
 Route::get('seat/{id_show}',[show::class,"show_seat"]);
 Route::get('show/{id_film}/{id_cinema}/{id_date}', [show::class,"show_film_cinema"]);
 
+
+// Route::get('pay/{id_film}',[vnpay::class,"create"]);
+Route::post('pay',[vnpay::class,"create"]);
+
+
+//user
+Route::get('auth/google/url', [login::class,"loginUrl"]);
+Route::get('auth/google/callback', [login::class,"loginCallback"]);
