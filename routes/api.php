@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\show_movie;
+use App\Http\Controllers\movie;
 use App\Http\Controllers\show;
 use App\Http\Controllers\vnpay;
 use Laravel\Socialite\Facades\Socialite;
@@ -41,3 +42,9 @@ Route::post('pay',[vnpay::class,"create"]);
 //user
 Route::get('auth/google/url', [login::class,"loginUrl"]);
 Route::get('auth/google/callback', [login::class,"loginCallback"]);
+
+//admin
+Route::prefix('admin')->group(function () {
+    Route::resource('movie', movie::class);
+});
+

@@ -10,8 +10,12 @@ class show_movie extends Controller
         $data = DB::table('film')->get();
         return json_encode($data);
     }
-    function show_movie_nowshowing(){
+    function show_movie_nowshowing(Request $request){
         $data = DB::table('film')->where("status",1)->get();
+        // return json_encode($data);
+        if($request->header()['token'][0] === 'null'){
+            return 'no';
+        }
         return json_encode($data);
     }
     function show_movie_commingsoon(){

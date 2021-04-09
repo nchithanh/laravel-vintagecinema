@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 
 class movie extends Controller
 {
@@ -11,8 +12,9 @@ class movie extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        
         return 'index';
     }
 
@@ -34,7 +36,15 @@ class movie extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::insert('insert into film (name, point, 
+        description,duration,country,category,
+        date_start,status,img) 
+        values (?,?,?,?,?,?,?,?,?)', 
+        [$request['name'],$request['point'],$request['description'],
+        $request['duration'],$request['country'],$request['category'],
+        $request['date_start'],$request['status'],$request['img']
+        ]);
+        return 'succes';
     }
 
     /**
@@ -68,7 +78,7 @@ class movie extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        return $request;
     }
 
     /**
@@ -79,6 +89,7 @@ class movie extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::table('film')->where('id_film',$id)->delete();
+        return 'succes';
     }
 }
