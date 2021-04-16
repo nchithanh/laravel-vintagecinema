@@ -8,6 +8,9 @@ use App\Http\Controllers\show;
 use App\Http\Controllers\vnpay;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\login;
+use App\Http\Controllers\AdminShow;
+use App\Http\Controllers\admin;
+use App\Http\Controllers\room;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,5 +49,8 @@ Route::get('auth/google/callback', [login::class,"loginCallback"]);
 //admin
 Route::prefix('admin')->group(function () {
     Route::resource('movie', movie::class);
+    Route::resource('show', AdminShow::class);
+    Route::resource('room', room::class);
+    Route::post('show_film_cinema', [admin::class,"show_where_film_cinema"]);
 });
 

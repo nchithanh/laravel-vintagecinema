@@ -5,17 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 
-class movie extends Controller
+class AdminShow extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        
-        return 'index';
+        //
     }
 
     /**
@@ -36,15 +35,11 @@ class movie extends Controller
      */
     public function store(Request $request)
     {
-        DB::insert('insert into film (name, point, 
-        description,duration,country,category,
-        date_start,status,img) 
-        values (?,?,?,?,?,?,?,?,?)', 
-        [$request['name'],$request['point'],$request['description'],
-        $request['duration'],$request['country'],$request['category'],
-        $request['date_start'],$request['status'],$request['img']
-        ]);
-        
+        $id_film_cinema = DB::table('film_cinema')->where('id_film',$request['id_film'])->where('id_cinema',$request['id_cinema'])->get();
+        $id_film_cinema = json_decode($id_film_cinema,true);
+        DB::insert('insert into showw (time, id_film_cinema, id_room, id_date) 
+        values (?, ?, ?, ?)', 
+        [''.$request['time'].'', $id_film_cinema[0]['id_film_cinema'], $request['id_room'], $request['id_date']]);
     }
 
     /**
@@ -53,9 +48,11 @@ class movie extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id_flim)
     {
-        //
+        $data_film_cinema = DB::table('film_cinema')->select->where('id_film',$id_flim)->get();
+        $data_show = DB::table('showw')->where('id_film_cinema',$id)->join('room','showw.id_room','=','room.id_room')->get();
+        return $data_show;
     }
 
     /**
@@ -66,7 +63,11 @@ class movie extends Controller
      */
     public function edit($id)
     {
-        //
+        $data_show = DB::select('SELECT * FROM `showw`,`room`,`date` 
+        WHERE showw.id_room = room.id_room 
+        AND showw.id_date = date.id_date 
+        AND id_show = '.$id.'');
+        return $data_show;
     }
 
     /**
@@ -78,11 +79,9 @@ class movie extends Controller
      */
     public function update(Request $request, $id)
     {
-        DB::update('update film set name = "'.$request['name'].'", point = '.$request['point'].', 
-        description = "'.$request['description'].'",duration = "'.$request['duration'].'",
-        country = "'.$request['country'].'",category = "'.$request['category'].'",
-        date_start = "'.$request['date_start'].'",status = '.$request['status'].',
-        img = "'.$request['img'].'" where id_film = ?', [$id]);
+        DB::update('update showw set time = "'.$request['time'].'",
+        id_room = '.$request['id_room'].',
+        id_date = '.$request['id_date'].' where id_show = ?', [$id]);
     }
 
     /**
@@ -93,6 +92,6 @@ class movie extends Controller
      */
     public function destroy($id)
     {
-        DB::table('film')->where('id_film',$id)->delete();
+        DB::table('showw')->where('id_show',$id)->delete();
     }
 }
