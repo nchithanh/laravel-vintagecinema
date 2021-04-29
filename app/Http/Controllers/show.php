@@ -50,10 +50,12 @@ class show extends Controller
         };
         for ($i=0; $i < count($data_seat); $i++) { 
             for ($j=0; $j < count($data_checked_seat); $j++) { 
-                if($data_seat[$i]['id_seat'] == $data_checked_seat[$j]['id_seat']){
+                if($data_seat[$i]['id_seat'] === $data_checked_seat[$j]['id_seat']){
                     $data_seat[$i]['checked'] = 1;
+                    break;
                 }else{
                     $data_seat[$i]['checked'] = 0;
+                    
                 }
             }
         }

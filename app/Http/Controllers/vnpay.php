@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 
 class vnpay extends Controller
 {
@@ -13,11 +14,11 @@ class vnpay extends Controller
         $vnp_TmnCode = "FBRII8TM"; //Mã website tại VNPAY 
         $vnp_HashSecret = "PFDKTIFSQFGVLAKRRSDRPOSPZALYBUAT"; //Chuỗi bí mật
         $vnp_Url = "http://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost:4200";
+        $vnp_Returnurl = "http://localhost:4200/qr";
         $vnp_TxnRef = date("YmdHis"); //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = "Thanh toán hóa đơn phí dich vụ";
         $vnp_OrderType = 'billpayment';
-        $vnp_Amount = 10000 * 100;
+        $vnp_Amount = $request['price'] * 100;
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = request()->ip();
@@ -62,14 +63,60 @@ class vnpay extends Controller
         }
         return json_encode($vnp_Url);
     }
+
+
     public function return(Request $request)
 {
-    $url = session('url_prev','/');
-    if($request->vnp_ResponseCode == "00") {
-        $this->apSer->thanhtoanonline(session('cost_id'));
-        return redirect($url)->with('success' ,'Đã thanh toán phí dịch vụ');
-    }
-    session()->forget('url_prev');
-    return redirect($url)->with('errors' ,'Lỗi trong quá trình thanh toán phí dịch vụ');
+    // if($request->vnp_ResponseCode == "00") {
+    //     return 'https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=http://localhost:4200/'.$request['vnp_BankTranNo'].'';
+    // }
+    
+    // $url = session('url_prev','/');
+    // if($request->vnp_ResponseCode == "00") {
+    //     $this->apSer->thanhtoanonline(session('cost_id'));
+    //     return redirect($url)->with('success' ,'Đã thanh toán phí dịch vụ');
+    // }
+    // session()->forget('url_prev');
+    // return redirect($url)->with('errors' ,'Lỗi trong quá trình thanh toán phí dịch vụ');
+
+    $data = DB::table('detail_booking')
+    ->where('id_user',$request['id_user'])
+    ->where('id_film',$request['id_film'])
+    ->where('id_cinema',$request['id_cinema'])
+    ->where('id_show',$request['id_show'])
+    ->where('code',$request['code'])
+    ->get();
+
+    if(count($data)>0){
+        $data = json_decode($data,true);
+        DB::insert('insert into seat_checked (id_show, id_seat, id_detail_booking) 
+        values (?, ?, ?)', 
+        [$request['id_show'], $request['id_seat'],$data[0]['id_detail_booking']]);
+        return $request;
+    };
+    
+    DB::select('INSERT INTO `detail_booking`(`id_film`, `id_cinema`, `id_show`, `id_user`, `code`)
+    VALUES ('.$request['id_film'].','.$request['id_cinema'].','.$request['id_show'].','.$request['id_user'].',"'.$request['code'].'")');
+
+    // DB::select('INSERT INTO `detail_booking`(`id_detail_booking`, `id_film`, `id_cinema`, `id_show`, `id_user`, `code`) 
+    // VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6])');
+
+    $data = DB::table('detail_booking')
+    ->where('id_user',$request['id_user'])
+    ->where('id_film',$request['id_film'])
+    ->where('id_cinema',$request['id_cinema'])
+    ->where('id_show',$request['id_show'])
+    ->where('code',$request['code'])
+    ->get();
+
+    $data = json_decode($data,true);
+        DB::insert('insert into seat_checked (id_show, id_seat, id_detail_booking) 
+        values (?, ?, ?)', 
+        [$request['id_show'], $request['id_seat'],$data[0]['id_detail_booking']]);
+        return $request;
+
+
+    
 }
+    
 }
