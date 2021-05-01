@@ -11,6 +11,9 @@ use App\Http\Controllers\login;
 use App\Http\Controllers\AdminShow;
 use App\Http\Controllers\admin;
 use App\Http\Controllers\room;
+
+use App\Mail\sendmail;
+use Illuminate\Support\Facades\Mail;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -51,6 +54,17 @@ Route::get('auth/google/url', [login::class,"loginUrl"]);
 Route::get('auth/google/callback', [login::class,"loginCallback"]);
 //login
 Route::post('login', [login::class,"login_sign_up"]);
+//send mail
+Route::get('/send-mail', function () {
+    $details = [
+        'title' => 'Mail from ItSolutionStuff.com',
+        'body' => 'This is for testing email using smtp'
+    ];
+   
+    Mail::to('nchithanh9999@gmail.com')->send(new \App\Mail\sendmail($details));
+   
+    dd("Email is Sent.");
+});
 
 //admin
 
